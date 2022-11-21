@@ -88,19 +88,29 @@ class ScoreSheet
 
 	void render(java.io.PrintStream print_stream)
 	{
+		int total = 0;
+
 		for (int line_index = 0; line_index < this.upper_section.length; line_index++)
 		{
+			total += this.upper_section[line_index].get_score();
 			this.upper_section[line_index].render(print_stream);
 			print_stream.println();
 		}
 
+		total += this.bonus_score_line.get_score();
 		this.bonus_score_line.render(print_stream);
 		print_stream.println();
 
 		for (int line_index = 0; line_index < this.lower_section.length; line_index++)
 		{
+			total += this.lower_section[line_index].get_score();
 			this.lower_section[line_index].render(print_stream);
 			print_stream.println();
 		}
-	}
+
+		ScoreLine total_score_line = new ScoreLine("", "", "Grand Total");
+		total_score_line.set_score(total);
+		total_score_line.render(print_stream);
+		print_stream.println();
+}
 }

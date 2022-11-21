@@ -6,7 +6,8 @@ class Player
 	private int remaining_rolls = 3;
 	private String name;
 	private ScoreSheet sheet = new ScoreSheet();
-	private boolean turn_taken = true;
+	private boolean can_take = false;
+	private int remaining_turns = 13;
 	
 	Player(String name)
 	{
@@ -30,48 +31,44 @@ class Player
 
 	void take(String name)
 	{
-		if (this.turn_taken == false)
-		{
-			if (this.sheet.is_available(name))
-			{
-				this.sheet.take(name, this.dice);			
-				this.remaining_rolls = 3;
-				this.turn_taken = true;
+		if (!this.can_take)
+			return;
 
-				for (int dice_index = 0; dice_index < this.dice.length; dice_index++)
-				{
-					this.dice[dice_index].reset();
-				}
-			}
-		}
+		if (!this.sheet.is_available(name))
+			return;
+
+		this.sheet.take(name, this.dice);			
+		this.can_take = false;
+		this.remaining_turns--;
+
+		for (int dice_index = 0; dice_index < this.dice.length; dice_index++)
+			this.dice[dice_index].reset();
+
+		if (this.remaining_turns > 0)
+			this.remaining_rolls = 3;
 	}
 
 	void roll()
 	{
-		if (remaining_rolls > 0)
+		if (this.remaining_rolls == 0)
+			return;
+
+		for (int dice_index = 0; dice_index < this.dice.length; dice_index++)
+			this.dice[dice_index].roll();
+		
+		this.remaining_rolls--;
+		this.can_take = true;
+
+		if (this.remaining_rolls == 0)
 		{
-			this.turn_taken = false;
-
-			for (int dice_index = 0; dice_index < this.dice.length; dice_index++)
-			{
-				this.dice[dice_index].roll();
-			}
-			
-			this.remaining_rolls--;
-
-			if (this.remaining_rolls == 0)
-			{
-				for(int dice_index = 0; dice_index < this.dice.length; dice_index++)
-				{
-					this.dice[dice_index].unkeep();
-				}
-			}
+			for(int dice_index = 0; dice_index < this.dice.length; dice_index++)
+				this.dice[dice_index].unkeep();
 		}
 	}
 
 	void render_turn(java.io.PrintStream print_stream)
 	{
-		if (!this.turn_taken)
+		if (this.can_take)
 		{
 			render_header(print_stream, "DICE");
 			for(int dice_index = 0; dice_index < this.dice.length; dice_index++)
@@ -92,7 +89,11 @@ class Player
 		}
 
 		render_header(print_stream, "ROLLS REMAINING");
-		print_stream.print(this.remaining_rolls);
+		print_stream.println(this.remaining_rolls);
+
+		print_stream.println();
+		render_header(print_stream, "TURNS REMAINING");
+		print_stream.println(this.remaining_turns);
 	}
 
 	boolean has_rolls()

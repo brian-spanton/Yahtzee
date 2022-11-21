@@ -1,6 +1,6 @@
 package game;
 
-abstract class ScoreLine
+class ScoreLine
 {
 	private String name;
 	private String subtext;
@@ -24,7 +24,7 @@ abstract class ScoreLine
 		return this.score;
 	}
 
-	protected void set_score(int score)
+	void set_score(int score)
 	{
 		this.score = score;
 	}
@@ -34,5 +34,3 @@ abstract class ScoreLine
 		return this.name;
 	}
 }
-
-
