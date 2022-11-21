@@ -1,49 +1,50 @@
 package game;
 
-public class Die {
-	int face;
-	boolean keep = false;
+class Die
+{
+	private int face = 0;
+	private boolean keeping = false;
 	
-	public Die()
+	Die()
 	{
-		roll();
+	}
+
+	void reset()
+	{
+		this.face = 0;
+		unkeep();
 	}
 	
-	public void roll() 
+	void roll() 
 	{
-		if(this.keep == false)
+		if(this.keeping == false)
 		{
 			this.face = (int)(Math.random() * 6f) + 1;
 		}
 	}
 	
-	public int get_face()
+	int get_face()
 	{
 		return this.face;
 	}
 	
-	public void keep()
+	void keep()
 	{
-		this.keep = true;
+		this.keeping = !this.keeping;
 	}
 	
-	public void unkeep()
+	void unkeep()
 	{
-		this.keep = false;
+		this.keeping = false;
 	}
 	
-	@Override
-	public String toString()
+	void render(java.io.PrintStream print_stream)
 	{
-		String text = "";
+		print_stream.print(this.face);
 		
-		text = text + this.face;
-		
-		if (this.keep == true)
+		if (this.keeping == true)
 		{
-			text = text + " (kept)";
+			print_stream.print(" (keeping)");
 		}
-		
-		return text;
 	}
 }

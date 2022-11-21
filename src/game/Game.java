@@ -1,10 +1,10 @@
 package game;
 import java.io.*;
+
 public class Game
 {
-	Player[] players;
-	int currentplayer;
-	int playercount;
+	private Player[] players;
+	private int current_player_index;
 	
 	public static void main(String[] args) throws Exception
 	{
@@ -12,104 +12,132 @@ public class Game
 		game.main();
 	}
 	
-	public void main() throws Exception
+	void main() throws Exception
 	{
-		
-	
-		setplayercount(1);
+		set_player_count(1);
+
+		System.out.println();
 		System.out.println("In this program you will be playing yahtzee.");
-		print_commands();
-		System.out.println("");
+		render_commands(System.out);
+		System.out.println();
 	
-		InputStreamReader r=new InputStreamReader(System.in);
-		BufferedReader br=new BufferedReader(r);
+		InputStreamReader console_reader = new InputStreamReader(System.in);
+		BufferedReader buffered_console_reader = new BufferedReader(console_reader);
 		
 		while(true) 
 		{
 			System.out.println("Please enter a command:");
 			
-			String input = br.readLine();
+			String input = buffered_console_reader.readLine();
 			String[] words = input.split(" ");
+
+			System.out.println();
 			
 			if (input.equalsIgnoreCase("i"))
 			{
-				System.out.println("The object of the game is to win the most points by the end. There will be 13 categories to win points for. You will add these up for your total at the end.");
-				System.out.println("");
+				System.out.println("The object of the game is to score the most points in 13 turns. Each turn you take one score after 1-3 rolls. Roll 1 is all 5 dice, any subsequent roll is 1-5 of those.");
+				System.out.println();
 			}
-			
-			
 			else if (words[0].equalsIgnoreCase("k"))
 			{
-				for(int iWord = 1; iWord<words.length; iWord++)
+				for(int word_index = 1; word_index < words.length; word_index++)
 				{
-					int iDie = Integer.parseInt(words[iWord]);
-					this.players[this.currentplayer].keep(iDie-1);
+					try
+					{
+						int die_number = Integer.parseInt(words[word_index]);
+						this.players[this.current_player_index].keep(die_number - 1);
+					}
+					catch(Exception e)
+					{
+					}
 				}
 				
-				this.players[this.currentplayer].print_dice();
-			}
-						
+				this.players[this.current_player_index].render_turn(System.out);
+			}			
 			else if (input.equalsIgnoreCase("r"))
 			{
-				this.players[this.currentplayer].roll();
+				if (this.players[this.current_player_index].has_rolls() == false)
+				{
+					this.current_player_index = (this.current_player_index + 1) % this.players.length;
+				}
+
+				this.players[this.current_player_index].roll();
+				this.players[this.current_player_index].render_turn(System.out);
 			}
-			
 			else if (input.equalsIgnoreCase("rr"))
 			{
-				this.players[this.currentplayer].print_dice();
+				this.players[this.current_player_index].render_turn(System.out);
 			}
-			
 			else if (input.equalsIgnoreCase("help"))
 			{
-				print_commands();
+				render_commands(System.out);
 			}
-			
-			else if (words[0].equalsIgnoreCase("pc"))
+			else if (words[0].equalsIgnoreCase("pc") && words.length == 2)
 			{
-				setplayercount(Integer.parseInt(words[1]));
+				set_player_count(Integer.parseInt(words[1]));
 			}
-			else if (words[0].equalsIgnoreCase("pn"))
+			else if (words[0].equalsIgnoreCase("pn") && words.length == 2)
 			{
-				this.players[this.currentplayer].rename(words[1]);
+				this.players[this.current_player_index].rename(words[1]);
 			}
-					
+			else if (words[0].equalsIgnoreCase("t") && words.length >= 2)
+			{
+				StringBuilder name = new StringBuilder();
+				name.append(words[1]);
+
+				for (int word_index = 2; word_index < words.length; word_index++)
+				{
+					name.append(" ");
+					name.append(words[word_index]);
+				}
+
+				this.players[this.current_player_index].take(name.toString());
+				this.players[this.current_player_index].render_score_sheet(System.out);
+			}
+			else if (words[0].equalsIgnoreCase("s"))
+			{
+				this.players[this.current_player_index].render_score_sheet(System.out);
+			}
+			else if (words[0].equalsIgnoreCase("q"))
+			{
+				break;
+			}
 			else	
 			{
 				System.out.println(input + " is an invalid command.");
-				System.out.println("");
-				print_commands();
+				System.out.println();
+				render_commands(System.out);
 			}
 			
-			System.out.println("");
+			System.out.println();
 		}
 	}
 	
-	public void setplayercount(int playercount)
+	void set_player_count(int player_count)
 	{
-		this.playercount = playercount;
-		this.players = new Player[this.playercount];
+		this.players = new Player[player_count];
 		
-		for(int iPlayer = 0; iPlayer<this.playercount; iPlayer++)
+		for(int player_index = 0; player_index < this.players.length; player_index++)
 		{
-			this.players[iPlayer]=new Player("Player " + (iPlayer + 1));
+			this.players[player_index] = new Player("Player " + (player_index + 1));
 		}
 		
-		this.currentplayer = 0;
-
+		this.current_player_index = 0;
 	}
 	
-	public void print_commands()
+	void render_commands(java.io.PrintStream print_stream)
 	{
-		System.out.println("Here are the possible commands:");
-		System.out.println("");
-		System.out.println("i = instructions on how to play");
-		System.out.println("r = roll the dice");
-		System.out.println("rr = show the dice and remaining rolls");
-		System.out.println("k = keep the dice specified by numbers after the k");	
-		System.out.println("help = print this list of commands");	
-		System.out.println("pc = set the player count to the specified number after the pc");
-		System.out.println("pn = set a player's name");
+		print_stream.println("Here are the possible commands:");
+		print_stream.println();
+		print_stream.println("i = instructions on how to play");
+		print_stream.println("r = roll the dice");
+		print_stream.println("rr = show the dice and remaining rolls");
+		print_stream.println("k = keep the dice specified by numbers after the k");	
+		print_stream.println("help = print this list of commands");
+		print_stream.println("pc = set the player count to the specified number after the pc");
+		print_stream.println("pn = set a player's name");
+		print_stream.println("t = take the current roll for the given score line");
+		print_stream.println("s = display the current player's score sheet");
+		print_stream.println("q = quit");
 	}
-	
-	
 }
