@@ -112,5 +112,5 @@ class ScoreSheet
 		total_score_line.set_score(total);
 		total_score_line.render(print_stream);
 		print_stream.println();
-}
+	}
 }
