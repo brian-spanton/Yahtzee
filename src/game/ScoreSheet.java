@@ -22,8 +22,8 @@ class ScoreSheet
 			this.map.put(this.upper_section[index].get_name(), this.upper_section[index]);
 		}
 
-		this.lower_section[0] = new OfAKindScoreLine("3 of a kind", null, "Add total of all dice", 3);
-		this.lower_section[1] = new OfAKindScoreLine("4 of a kind", null, "Add total of all dice", 4);
+		this.lower_section[0] = new OfAKindScoreLine("3 of a kind", "", "Add total of all dice", 3);
+		this.lower_section[1] = new OfAKindScoreLine("4 of a kind", "", "Add total of all dice", 4);
 		this.lower_section[2] = new FullHouseScoreLine();
 		this.lower_section[3] = new StraightScoreLine("SM Straight", "Sequence of 4", "Score 30", 4, 30);
 		this.lower_section[4] = new StraightScoreLine("LG Straight", "Sequence of 5", "Score 40", 5, 40);
@@ -108,7 +108,7 @@ class ScoreSheet
 			print_stream.println();
 		}
 
-		ScoreLine total_score_line = new ScoreLine("", "", "Grand Total");
+		ScoreLine total_score_line = new ScoreLine("Grand Total", "", "");
 		total_score_line.set_score(total);
 		total_score_line.render(print_stream);
 		print_stream.println();

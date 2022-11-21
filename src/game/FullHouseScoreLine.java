@@ -4,7 +4,7 @@ class FullHouseScoreLine extends DiscretionaryScoreLine
 {
     FullHouseScoreLine()
     {
-        super("Full House", null, "Score 25");
+        super("Full House", "", "Score 25");
     }
 
 	@Override boolean got_it(Die[] dice)

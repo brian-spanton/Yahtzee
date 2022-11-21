@@ -4,7 +4,7 @@ class ChanceScoreLine extends DiscretionaryScoreLine
 {
     ChanceScoreLine()
     {
-        super("Chance", null, "Add total of all 5 dice");
+        super("Chance", "", "Add total of all 5 dice");
     }
 
 	@Override boolean got_it(Die[] dice)
