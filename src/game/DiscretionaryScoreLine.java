@@ -59,9 +59,6 @@ abstract class DiscretionaryScoreLine extends ScoreLine
 
 	void take(Die[] dice)
 	{
-		if (!this.is_available())
-            return;
-
         this.set_score(this.get_score(dice));
         this.available = false;
 	}

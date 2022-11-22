@@ -56,11 +56,6 @@ public class Game
 			}			
 			else if (input.equalsIgnoreCase("r"))
 			{
-				if (this.players[this.current_player_index].has_rolls() == false)
-				{
-					this.current_player_index = (this.current_player_index + 1) % this.players.length;
-				}
-
 				this.players[this.current_player_index].roll();
 				this.players[this.current_player_index].render_turn(System.out);
 			}
@@ -91,8 +86,15 @@ public class Game
 					name.append(words[word_index]);
 				}
 
-				this.players[this.current_player_index].take(name.toString());
-				this.players[this.current_player_index].render_score_sheet(System.out);
+				boolean taken = this.players[this.current_player_index].take(name.toString());
+				if (taken)
+				{
+					this.players[this.current_player_index].render_score_sheet(System.out);
+
+					this.current_player_index = (this.current_player_index + 1) % this.players.length;
+					System.out.println();
+					this.players[this.current_player_index].render_turn(System.out);
+				}
 			}
 			else if (words[0].equalsIgnoreCase("s"))
 			{
@@ -116,12 +118,12 @@ public class Game
 	void set_player_count(int player_count)
 	{
 		this.players = new Player[player_count];
-		
+
 		for(int player_index = 0; player_index < this.players.length; player_index++)
 		{
 			this.players[player_index] = new Player("Player " + (player_index + 1));
 		}
-		
+
 		this.current_player_index = 0;
 	}
 	
@@ -129,15 +131,15 @@ public class Game
 	{
 		print_stream.println("Here are the possible commands:");
 		print_stream.println();
-		print_stream.println("i = instructions on how to play");
-		print_stream.println("r = roll the dice");
-		print_stream.println("rr = show the dice and remaining rolls");
-		print_stream.println("k = keep the dice specified by numbers after the k");	
 		print_stream.println("help = print this list of commands");
+		print_stream.println("q = quit");
+		print_stream.println("i = instructions on how to play");
 		print_stream.println("pc = set the player count to the specified number after the pc");
 		print_stream.println("pn = set a player's name");
-		print_stream.println("t = take the current roll for the given score line");
 		print_stream.println("s = display the current player's score sheet");
-		print_stream.println("q = quit");
+		print_stream.println("rr = show the dice and remaining rolls");
+		print_stream.println("r = roll the dice");
+		print_stream.println("k = keep the dice specified by numbers after the k");	
+		print_stream.println("t = take the current roll for the given score line");
 	}
 }

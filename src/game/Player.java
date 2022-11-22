@@ -29,23 +29,25 @@ class Player
 		this.dice[die_index].keep();
 	}
 
-	void take(String name)
+	boolean take(String name)
 	{
 		if (!this.can_take)
-			return;
+			return false;
 
-		if (!this.sheet.is_available(name))
-			return;
+		boolean taken = this.sheet.take(name, this.dice);
+		if (!taken)
+			return false;
 
-		this.sheet.take(name, this.dice);			
 		this.can_take = false;
 		this.remaining_turns--;
 
-		for (int dice_index = 0; dice_index < this.dice.length; dice_index++)
-			this.dice[dice_index].reset();
+		for (Die die : this.dice)
+			die.reset();
 
 		if (this.remaining_turns > 0)
 			this.remaining_rolls = 3;
+
+		return true;
 	}
 
 	void roll()
@@ -68,6 +70,8 @@ class Player
 
 	void render_turn(java.io.PrintStream print_stream)
 	{
+		render_header(print_stream, "TURN!");
+
 		if (this.can_take)
 		{
 			render_header(print_stream, "DICE");
@@ -90,10 +94,6 @@ class Player
 
 		render_header(print_stream, "ROLLS REMAINING");
 		print_stream.println(this.remaining_rolls);
-
-		print_stream.println();
-		render_header(print_stream, "TURNS REMAINING");
-		print_stream.println(this.remaining_turns);
 	}
 
 	boolean has_rolls()
@@ -114,5 +114,9 @@ class Player
 	{
 		this.render_header(print_stream, "SCORE SHEET");
 		this.sheet.render(print_stream);
+
+		print_stream.println();
+		render_header(print_stream, "TURNS REMAINING");
+		print_stream.println(this.remaining_turns);
 	}
 }

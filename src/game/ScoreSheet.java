@@ -2,115 +2,107 @@ package game;
 
 class ScoreSheet
 {
-	private java.util.HashMap<String, DiscretionaryScoreLine> map = new java.util.HashMap<String, DiscretionaryScoreLine>();
-	private UpperSectionScoreLine[] upper_section = new UpperSectionScoreLine[6];
+	private java.util.ArrayList<ScoreLine> all_lines = new java.util.ArrayList<ScoreLine>();
+	private java.util.ArrayList<DiscretionaryScoreLine> discretionary_line_list = new java.util.ArrayList<DiscretionaryScoreLine>();
+	private java.util.HashMap<String, DiscretionaryScoreLine> discretionary_line_map = new java.util.HashMap<String, DiscretionaryScoreLine>();
 	private BonusScoreLine bonus_score_line = new BonusScoreLine();
-	private DiscretionaryScoreLine[] lower_section = new DiscretionaryScoreLine[8];
 	private YahtzeeBonusScoreLine yahtzee_bonus_score_line = new YahtzeeBonusScoreLine();
+	private ScoreLine total_score_line = new ScoreLine("Grand Total", "", "");
 
 	ScoreSheet()
 	{
-		this.upper_section[0] = new UpperSectionScoreLine("Aces", 1);
-		this.upper_section[1] = new UpperSectionScoreLine("Twos", 2);
-		this.upper_section[2] = new UpperSectionScoreLine("Threes", 3);
-		this.upper_section[3] = new UpperSectionScoreLine("Fours", 4);
-		this.upper_section[4] = new UpperSectionScoreLine("Fives", 5);
-		this.upper_section[5] = new UpperSectionScoreLine("Sixes", 6);
+		add_score_line(new UpperSectionScoreLine("Aces", 1));
+		add_score_line(new UpperSectionScoreLine("Twos", 2));
+		add_score_line(new UpperSectionScoreLine("Threes", 3));
+		add_score_line(new UpperSectionScoreLine("Fours", 4));
+		add_score_line(new UpperSectionScoreLine("Fives", 5));
+		add_score_line(new UpperSectionScoreLine("Sixes", 6));
+		add_score_line(this.bonus_score_line);
+		add_score_line(new OfAKindScoreLine("3 of a kind", "", "Add total of all dice", 3));
+		add_score_line(new OfAKindScoreLine("4 of a kind", "", "Add total of all dice", 4));
+		add_score_line(new FullHouseScoreLine());
+		add_score_line(new StraightScoreLine("SM Straight", "Sequence of 4", "Score 30", 4, 30));
+		add_score_line(new StraightScoreLine("LG Straight", "Sequence of 5", "Score 40", 5, 40));
+		add_score_line(new YahtzeeScoreLine());
+		add_score_line(new ChanceScoreLine());
+		add_score_line(this.yahtzee_bonus_score_line);
+		add_score_line(this.total_score_line);
+	}
 
-		for (int index = 0; index < this.upper_section.length; index++)
-		{
-			this.map.put(this.upper_section[index].get_name(), this.upper_section[index]);
-		}
+	private void add_score_line(ScoreLine line)
+	{
+		this.all_lines.add(line);
 
-		this.lower_section[0] = new OfAKindScoreLine("3 of a kind", "", "Add total of all dice", 3);
-		this.lower_section[1] = new OfAKindScoreLine("4 of a kind", "", "Add total of all dice", 4);
-		this.lower_section[2] = new FullHouseScoreLine();
-		this.lower_section[3] = new StraightScoreLine("SM Straight", "Sequence of 4", "Score 30", 4, 30);
-		this.lower_section[4] = new StraightScoreLine("LG Straight", "Sequence of 5", "Score 40", 5, 40);
-		this.lower_section[5] = new YahtzeeScoreLine();
-		this.lower_section[6] = new ChanceScoreLine();
-		this.lower_section[7] = this.yahtzee_bonus_score_line;
+		if (line instanceof DiscretionaryScoreLine == false)
+			return;
 
-		for (int index = 0; index < this.lower_section.length; index++)
-		{
-			this.map.put(this.lower_section[index].get_name(), this.lower_section[index]);
-		}
+		DiscretionaryScoreLine discretionary_score_line = (DiscretionaryScoreLine)line;
+		this.discretionary_line_list.add(discretionary_score_line);
+		this.discretionary_line_map.put(line.get_name().toLowerCase(), discretionary_score_line);
 	}
 
 	void render_available_to_take(java.io.PrintStream print_stream, Die[] dice)
 	{
-		for (int line_index = 0; line_index < this.upper_section.length; line_index++)
+		for (DiscretionaryScoreLine line : this.discretionary_line_list)
 		{
-			if (this.upper_section[line_index].is_available())
-			{
-				this.upper_section[line_index].render_score(print_stream, dice);
-				print_stream.println();
-			}
-		}
+			if (!line.is_available())
+				continue;
 
-		for (int line_index = 0; line_index < this.lower_section.length; line_index++)
-		{
-			if (this.lower_section[line_index].is_available())
-			{
-				this.lower_section[line_index].render_score(print_stream, dice);
-				print_stream.println();
-			}
+			line.render_score(print_stream, dice);
+			print_stream.println();
 		}
+	}
+
+	private DiscretionaryScoreLine get_available_line(String name)
+	{
+		String lower_name = name.toLowerCase();
+
+		DiscretionaryScoreLine score_line = this.discretionary_line_map.get(lower_name);
+		if (score_line == null)
+			return null;
+
+		if (!score_line.is_available())
+			return null;
+
+		return score_line;
 	}
 
 	boolean is_available(String name)
 	{
-		DiscretionaryScoreLine score_line = this.map.get(name);
-
-		if (score_line == null)
-			return false;
-
-		return score_line.is_available();
+		DiscretionaryScoreLine line = get_available_line(name);
+		return line != null;
 	}
 
-	void take(String name, Die[] dice)
+	boolean take(String name, Die[] dice)
 	{
-		if (!is_available(name))
-			return;
-			
-		DiscretionaryScoreLine score_line = this.map.get(name);
+		DiscretionaryScoreLine take_line = get_available_line(name);
+		if (take_line == null)
+			return false;
 
-		if (score_line == null)
-			return;
+		take_line.take(dice);
 
-		score_line.take(dice);
-
-		if (score_line instanceof UpperSectionScoreLine)
-			this.bonus_score_line.update_score(this.upper_section);
-		else if (score_line instanceof YahtzeeScoreLine && score_line.got_it(dice))
+		if (take_line instanceof UpperSectionScoreLine)
+			this.bonus_score_line.update_score(this.all_lines);
+		else if (take_line instanceof YahtzeeScoreLine && take_line.got_it(dice))
 			this.yahtzee_bonus_score_line.set_available(true);
+
+		this.total_score_line.set_score(0);
+
+		int total = 0;
+		for (ScoreLine line : this.all_lines)
+			total += line.get_score();
+
+		this.total_score_line.set_score(total);
+	
+		return true;
 	}
 
 	void render(java.io.PrintStream print_stream)
 	{
-		int total = 0;
-
-		for (int line_index = 0; line_index < this.upper_section.length; line_index++)
+		for (ScoreLine line : this.all_lines)
 		{
-			total += this.upper_section[line_index].get_score();
-			this.upper_section[line_index].render(print_stream);
+			line.render(print_stream);
 			print_stream.println();
 		}
-
-		total += this.bonus_score_line.get_score();
-		this.bonus_score_line.render(print_stream);
-		print_stream.println();
-
-		for (int line_index = 0; line_index < this.lower_section.length; line_index++)
-		{
-			total += this.lower_section[line_index].get_score();
-			this.lower_section[line_index].render(print_stream);
-			print_stream.println();
-		}
-
-		ScoreLine total_score_line = new ScoreLine("Grand Total", "", "");
-		total_score_line.set_score(total);
-		total_score_line.render(print_stream);
-		print_stream.println();
 	}
 }
