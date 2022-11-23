@@ -41,6 +41,11 @@ class ScoreSheet
 		this.discretionary_line_map.put(line.get_name().toLowerCase(), discretionary_score_line);
 	}
 
+	int get_total()
+	{
+		return this.total_score_line.get_score();
+	}
+
 	void render_available_to_take(java.io.PrintStream print_stream, Die[] dice)
 	{
 		for (DiscretionaryScoreLine line : this.discretionary_line_list)

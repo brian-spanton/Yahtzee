@@ -29,10 +29,9 @@ abstract class DiscretionaryScoreLine extends ScoreLine
     {
         int[] face_count = new int[6];
 		
-		for (int face_count_index = 0; face_count_index < dice.length; face_count_index++)
+		for (Die die : dice)
 		{
-            int face = dice[face_count_index].get_face();
-
+            int face = die.get_face();
             if (face > 0)
     			face_count[face - 1] += 1;
 		}
@@ -44,10 +43,8 @@ abstract class DiscretionaryScoreLine extends ScoreLine
 	{
 		int total = 0;
 		
-		for(int i = 0; i < dice.length; i++)
-		{
-			total = total + dice[i].get_face();
-		}
+		for(Die die : dice)
+			total = total + die.get_face();
 
 		return total;
 	}

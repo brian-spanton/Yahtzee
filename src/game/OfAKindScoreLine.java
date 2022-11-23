@@ -12,11 +12,11 @@ class OfAKindScoreLine extends DiscretionaryScoreLine
 
     @Override boolean got_it(Die[] dice)
     {
-        int[] face_count = count_faces(dice);
+        int[] face_counts = count_faces(dice);
 
-        for (int face_count_index = 0; face_count_index < face_count.length; face_count_index++)
+        for (int face_count : face_counts)
         {
-            if (face_count[face_count_index] >= this.how_many)
+            if (face_count >= this.how_many)
                 return true;
         }
 		

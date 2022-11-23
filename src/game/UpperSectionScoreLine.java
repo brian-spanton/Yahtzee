@@ -19,12 +19,10 @@ class UpperSectionScoreLine extends DiscretionaryScoreLine
 	{
 		int total = 0;
 		
-		for(int i = 0; i < dice.length; i++)
+		for(Die die : dice)
 		{
-			if (dice[i].get_face() == this.face)
-			{
-				total = total + dice[i].get_face();
-			}
+			if (die.get_face() == this.face)
+				total = total + die.get_face();
 		}
 		
 		return total;
