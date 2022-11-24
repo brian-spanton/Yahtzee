@@ -6,6 +6,7 @@ public class Game
 	private java.util.ArrayList<Player> players;
 	private int current_player_index;
 	private Player current_player;
+    private boolean auto_mode = false;
 	
 	public static void main(String[] args) throws Exception
 	{
@@ -20,14 +21,14 @@ public class Game
 		System.out.println();
 		System.out.println("In this program you will be playing yahtzee.");
 		render_commands(System.out);
-		System.out.println();
 	
 		InputStreamReader console_reader = new InputStreamReader(System.in);
 		BufferedReader buffered_console_reader = new BufferedReader(console_reader);
 		
 		while(true) 
 		{
-			System.out.println("Please enter a command:");
+            System.out.println();
+            System.out.println("Please enter a command:");
 			
 			String input = buffered_console_reader.readLine();
 			String[] words = input.split(" ");
@@ -45,110 +46,135 @@ public class Game
 			}
 			else if (words[0].equalsIgnoreCase("pc") && words.length == 2)
 			{
-				set_player_count(Integer.parseInt(words[1]));
+				try
+                {
+                    set_player_count(Integer.parseInt(words[1]));
+                }
+                catch (Exception e)
+                {
+                }
 			}
 			else if (words[0].equalsIgnoreCase("pn") && words.length == 2)
 			{
-				this.current_player.rename(words[1]);
+    			this.current_player.rename(words[1]);
 			}
-			else if (words[0].equalsIgnoreCase("q"))
+			else if (input.equalsIgnoreCase("q"))
 			{
 				break;
 			}
+            else if (input.equalsIgnoreCase("a"))
+            {
+                this.auto_mode = !this.auto_mode;
+                System.out.print("auto mode = ");
+                System.out.print(this.auto_mode);
+                System.out.println();
+            }
+            else if (input.length() == 0)
+            {
+                
+            }
 			else if (words[0].equalsIgnoreCase("k"))
 			{
-				if (this.current_player.has_turns())
-				{
-					for(int word_index = 1; word_index < words.length; word_index++)
-					{
-						try
-						{
-							int die_number = Integer.parseInt(words[word_index]);
-							current_player.keep(die_number - 1);
-						}
-						catch(Exception e)
-						{
-						}
-					}
-					
-					current_player.render_turn(System.out);
-				}
-				else
+				if (!this.current_player.has_turns())
 				{
 					render_results(System.out);
+                    continue;
 				}
+
+                for (int word_index = 1; word_index < words.length; word_index++)
+                {
+					try
+					{
+						int die_number = Integer.parseInt(words[word_index]);
+						current_player.keep(die_number - 1);
+					}
+					catch(Exception e)
+					{
+					}
+				}
+					
+				current_player.render_turn(System.out);
 			}			
 			else if (input.equalsIgnoreCase("r"))
 			{
-				if (this.current_player.has_turns())
-				{
-					this.current_player.roll();
-					this.current_player.render_turn(System.out);
-				}
-				else
+				if (!this.current_player.has_turns())
 				{
 					render_results(System.out);
+                    continue;
 				}
+
+				this.current_player.roll();
+				this.current_player.render_turn(System.out);
 			}
 			else if (input.equalsIgnoreCase("rr"))
 			{
-				if (this.current_player.has_turns())
-				{
-					this.current_player.render_turn(System.out);
-				}
-				else
+				if (!this.current_player.has_turns())
 				{
 					render_results(System.out);
+                    continue;
 				}
+
+				this.current_player.render_turn(System.out);
 			}
 			else if (words[0].equalsIgnoreCase("t") && words.length >= 2)
 			{
-				if (this.current_player.has_turns())
-				{
-					StringBuilder name = new StringBuilder();
-					name.append(words[1]);
-
-					for (int word_index = 2; word_index < words.length; word_index++)
-					{
-						name.append(" ");
-						name.append(words[word_index]);
-					}
-
-					boolean taken = this.current_player.take(name.toString());
-					if (taken)
-					{
-						this.current_player.render_score_sheet(System.out);
-
-						this.current_player_index = (this.current_player_index + 1) % this.players.size();
-						this.current_player = this.players.get(this.current_player_index);
-
-						System.out.println();
-
-						if (this.current_player.has_turns())
-						{
-							this.current_player.render_turn(System.out);
-						}
-						else
-						{
-							render_results(System.out);
-						}
-					}
-				}
-				else
+				if (!this.current_player.has_turns())
 				{
 					render_results(System.out);
+                    continue;
+				}
+
+				StringBuilder name = new StringBuilder();
+				name.append(words[1]);
+
+				for (int word_index = 2; word_index < words.length; word_index++)
+				{
+					name.append(" ");
+					name.append(words[word_index]);
+				}
+
+				boolean taken = this.current_player.take(name.toString());
+				if (taken)
+				{
+					this.current_player.render_score_sheet(System.out);
+
+					this.current_player_index = (this.current_player_index + 1) % this.players.size();
+					this.current_player = this.players.get(this.current_player_index);
+
+					System.out.println();
+
+					if (!this.current_player.has_turns())
+					{
+    					render_results(System.out);
+                        continue;
+					}
+                    
+					this.current_player.render_turn(System.out);
 				}
 			}
 			else if (words[0].equalsIgnoreCase("s"))
 			{
-				if (this.current_player.has_turns())
-				{
-					this.current_player.render_score_sheet(System.out);
-				}
-				else
-				{
-					render_results(System.out);
-				}
+                if (words.length == 1)
+                {
+    				if (!this.current_player.has_turns())
+    				{
+    					render_results(System.out);
+                        continue;
+                    }
+
+                    this.current_player.render_score_sheet(System.out);
+                }
+                else
+                {
+                    try
+                    {
+                        int index = Integer.parseInt(words[1]) - 1;
+                        this.players.get(index).render_score_sheet(System.out);
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                }
 			}
 			else	
 			{
@@ -156,8 +182,6 @@ public class Game
 				System.out.println();
 				render_commands(System.out);
 			}
-			
-			System.out.println();
 		}
 	}
 	
