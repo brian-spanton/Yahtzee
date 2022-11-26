@@ -107,6 +107,14 @@ public class Console
 		{
 			toggle_auto_mode();
 		}
+        else if (words[0].equalsIgnoreCase("g"))
+        {
+			if (!this.auto_mode)
+				return CommandResult.invalid;
+
+            while (!this.game.is_over())
+    			auto_command();            
+        }
 		else if (words[0].equalsIgnoreCase("k"))
 		{
 			java.util.ArrayList<Integer> keep_indexes = new java.util.ArrayList<Integer>();
@@ -188,6 +196,9 @@ public class Console
 		this.out.println("r = roll the dice");
 		this.out.println("k = keep the dice specified by numbers after the k");	
 		this.out.println("t = take the current roll for the given score line");
+        this.out.println("a = toggle auto mode");
+        this.out.println("<enter> = (auto mode) take or roll");
+        this.out.println("g = (auto mode) finish game");
 	}
 
 	void set_player_count(int count)
@@ -205,12 +216,12 @@ public class Console
 		this.out.println("The object of the game is to score the most points in 13 turns. Each turn you take one score after 1-3 rolls. Roll 1 is all 5 dice, any subsequent roll is 1-5 of those.");
 	}
 
-	void auto_command()
+	boolean auto_command()
 	{
 		if (this.game.is_over())
 		{
 			render_results();
-			return;
+			return false;
 		}
 
 		for (DiscretionaryScoreLine line : this.game.current_player.score_sheet.discretionary_line_list)
@@ -222,10 +233,11 @@ public class Console
 			if (!success)
 				break;
 
-			return;
+			return true;
 		}
 
 		roll();
+        return true;
 	}
 
 	void toggle_auto_mode()
