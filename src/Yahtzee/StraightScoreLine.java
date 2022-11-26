@@ -1,4 +1,4 @@
-package game;
+package Yahtzee;
 
 class StraightScoreLine extends DiscretionaryScoreLine
 {

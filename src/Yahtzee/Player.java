@@ -1,4 +1,4 @@
-package game;
+package Yahtzee;
 
 class Player implements java.lang.Comparable<Player>
 {
@@ -30,6 +30,11 @@ class Player implements java.lang.Comparable<Player>
 	void keep(int die_index)
 	{
 		this.dice[die_index].keep();
+	}
+
+	boolean can_take()
+	{
+		return this.can_take;
 	}
 
 	boolean take(String name)

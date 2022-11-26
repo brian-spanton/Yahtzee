@@ -1,4 +1,4 @@
-package game;
+package Yahtzee;
 
 abstract class DiscretionaryScoreLine extends ScoreLine
 {

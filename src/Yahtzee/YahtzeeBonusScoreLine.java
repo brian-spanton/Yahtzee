@@ -1,4 +1,4 @@
-package game;
+package Yahtzee;
 
 class YahtzeeBonusScoreLine extends OfAKindScoreLine
 {

@@ -1,4 +1,4 @@
-package game;
+package Yahtzee;
 
 class FullHouseScoreLine extends DiscretionaryScoreLine
 {

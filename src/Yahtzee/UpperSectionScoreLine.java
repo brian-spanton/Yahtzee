@@ -1,4 +1,4 @@
-package game;
+package Yahtzee;
 
 class UpperSectionScoreLine extends DiscretionaryScoreLine
 {
