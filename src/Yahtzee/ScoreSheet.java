@@ -3,7 +3,7 @@ package Yahtzee;
 class ScoreSheet
 {
 	private java.util.ArrayList<ScoreLine> all_lines = new java.util.ArrayList<ScoreLine>();
-	private java.util.ArrayList<DiscretionaryScoreLine> discretionary_line_list = new java.util.ArrayList<DiscretionaryScoreLine>();
+	java.util.ArrayList<DiscretionaryScoreLine> discretionary_line_list = new java.util.ArrayList<DiscretionaryScoreLine>();
 	private java.util.HashMap<String, DiscretionaryScoreLine> discretionary_line_map = new java.util.HashMap<String, DiscretionaryScoreLine>();
 	private BonusScoreLine bonus_score_line = new BonusScoreLine();
 	private YahtzeeBonusScoreLine yahtzee_bonus_score_line = new YahtzeeBonusScoreLine();
@@ -80,24 +80,7 @@ class ScoreSheet
 
 	boolean take(String name, Die[] dice)
 	{
-		DiscretionaryScoreLine take_line = null;
-
-		if (name == null)
-		{
-			for (DiscretionaryScoreLine line : this.discretionary_line_list)
-			{
-				if (line.is_available())
-				{
-					take_line = line;
-					break;
-				}
-			}
-		}
-		else
-		{
-			take_line = get_available_line(name);
-		}
-
+		DiscretionaryScoreLine take_line = get_available_line(name);
 		if (take_line == null)
 			return false;
 

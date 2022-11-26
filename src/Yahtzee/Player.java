@@ -5,7 +5,7 @@ class Player implements java.lang.Comparable<Player>
 	private Die[] dice = new Die[5];
 	private int remaining_rolls = 3;
 	private String name;
-	private ScoreSheet sheet = new ScoreSheet();
+	ScoreSheet score_sheet = new ScoreSheet();
 	private boolean can_take = false;
 	private int remaining_turns = 13;
 	
@@ -27,14 +27,10 @@ class Player implements java.lang.Comparable<Player>
 		this.name = customn;
 	}
 	
-	void keep(int die_index)
+	void keep(java.util.ArrayList<Integer> dice_indexes)
 	{
-		this.dice[die_index].keep();
-	}
-
-	boolean can_take()
-	{
-		return this.can_take;
+		for (int die_index : dice_indexes)
+			this.dice[die_index].keep();
 	}
 
 	boolean take(String name)
@@ -42,7 +38,7 @@ class Player implements java.lang.Comparable<Player>
 		if (!this.can_take)
 			return false;
 
-		boolean taken = this.sheet.take(name, this.dice);
+		boolean taken = this.score_sheet.take(name, this.dice);
 		if (!taken)
 			return false;
 
@@ -52,16 +48,18 @@ class Player implements java.lang.Comparable<Player>
 		for (Die die : this.dice)
 			die.reset();
 
-		if (this.remaining_turns > 0)
+		if (this.remaining_turns == 0)
+			this.remaining_rolls = 0;
+		else
 			this.remaining_rolls = 3;
 
 		return true;
 	}
 
-	void roll()
+	boolean roll()
 	{
 		if (this.remaining_rolls == 0)
-			return;
+			return false;
 
 		for (Die die : this.dice)
 			die.roll();
@@ -74,11 +72,13 @@ class Player implements java.lang.Comparable<Player>
 			for(Die die : this.dice)
 				die.unkeep();
 		}
+
+		return true;
 	}
 
 	int get_total()
 	{
-		return this.sheet.get_total();
+		return this.score_sheet.get_total();
 	}
 
 	void render_turn(java.io.PrintStream print_stream)
@@ -101,7 +101,7 @@ class Player implements java.lang.Comparable<Player>
 
 			print_stream.println();
 			render_header(print_stream, "OPTIONS");
-			this.sheet.render_available_to_take(print_stream, this.dice);
+			this.score_sheet.render_available_to_take(print_stream, this.dice);
 			print_stream.println();
 		}
 
@@ -112,11 +112,6 @@ class Player implements java.lang.Comparable<Player>
 	void render_total(java.io.PrintStream print_stream)
 	{
 		print_stream.printf("%16s: %2d", this.name, this.get_total());
-	}
-
-	boolean has_rolls()
-	{
-		return this.remaining_rolls > 0;
 	}
 
 	boolean has_turns()
@@ -136,7 +131,7 @@ class Player implements java.lang.Comparable<Player>
 	void render_score_sheet(java.io.PrintStream print_stream)
 	{
 		this.render_header(print_stream, "SCORE SHEET");
-		this.sheet.render(print_stream);
+		this.score_sheet.render(print_stream);
 
 		print_stream.println();
 		render_header(print_stream, "TURNS REMAINING");
