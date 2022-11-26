@@ -6,7 +6,7 @@ public class Console
 	private java.io.PrintStream out = System.out;
     private boolean auto_mode = false;	
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
 		Console console = new Console();
 		console.run();
