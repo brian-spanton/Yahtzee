@@ -220,7 +220,7 @@ public class Console
 	void auto_finish()
 	{
 		while (!this.game.is_over())
-			auto_command();                   
+			auto_command();
 	}
 
 	void toggle_auto_mode()
