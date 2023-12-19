@@ -2,13 +2,13 @@ package Yahtzee;
 
 class Die
 {
-	private int face = 0;
-	private boolean keeping = false;
+	int face = 0;
+	boolean keeping = false;
 	
 	Die()
 	{
 	}
-
+	
 	void reset()
 	{
 		this.face = 0;
@@ -36,15 +36,5 @@ class Die
 	void unkeep()
 	{
 		this.keeping = false;
-	}
-	
-	void render(java.io.PrintStream print_stream)
-	{
-		print_stream.print(this.face);
-		
-		if (this.keeping == true)
-		{
-			print_stream.print(" (keeping)");
-		}
 	}
 }
