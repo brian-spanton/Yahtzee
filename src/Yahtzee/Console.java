@@ -110,6 +110,13 @@ public class Console
 		{
 			toggle_auto_mode();
 		}
+        else if (words[0].equalsIgnoreCase("g"))
+        {
+            if (!this.auto_mode)
+                return CommandResult.invalid;
+            
+            auto_finish();
+        }
 		else if (words[0].equalsIgnoreCase("k"))
 		{
 			java.util.ArrayList<Integer> keep_indexes = new java.util.ArrayList<Integer>();
@@ -209,6 +216,12 @@ public class Console
 	
 		roll();
 	}
+
+    void auto_finish()
+    {
+        while (!this.game.is_over())
+    		auto_command();                   
+    }
 	
 	void toggle_auto_mode()
 	{
@@ -283,23 +296,26 @@ public class Console
 	{
 		this.out.println("Here are the possible commands:");
 		this.out.println();
-		this.out.println("help = print this list of commands");
+		this.out.println("help = show this list of commands");
 		this.out.println("q = quit");
-		this.out.println("i = instructions on how to play");
-		this.out.println("pc = set the player count to the specified number after the pc");
-		this.out.println("pn = set a player's name");
-		this.out.println("s = display the current player's score sheet");
-		this.out.println("rr = show the dice and remaining rolls");
+		this.out.println("i = show instructions on how to play");
+		this.out.println("pc = reset the game with the specified number of players");
+		this.out.println("pn = set the current player's name");
+		this.out.println("s = show the current player's score sheet");
+		this.out.println("rr = show the current player's dice and remaining rolls");
 		this.out.println("r = roll the dice");
-		this.out.println("k = keep the dice specified by numbers after the k");	
-		this.out.println("t = take the current roll for the given score line");
+		this.out.println("k = toggle keeping for the dice specified");	
+		this.out.println("t = take the current roll for the current player's specified score line");
+        this.out.println("a = toggle auto mode");
+        this.out.println("<enter> = (auto mode) take or roll");
+        this.out.println("g = (auto mode) finish game");
 	}
 	
 	void render_instructions()
 	{
 		this.out.println("The object of the game is to score the most points in 13 turns. Each turn you take one score after 1-3 rolls. Roll 1 is all 5 dice, any subsequent roll is 1-5 of those.");
 	}
-	
+
 	void render_auto_mode()
 	{
 		this.out.print("auto mode = ");
